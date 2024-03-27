@@ -3,6 +3,8 @@
 __pycache__/
 dataset/
 
+.DS_Store
+
 constants.py
 .env
 *.db
