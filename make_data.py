@@ -1,5 +1,6 @@
 import base64
 import sqlite3
+import time
 
 import anthropic
 import google.generativeai as genai
@@ -106,6 +107,9 @@ def main():
         cur.execute("INSERT INTO gemini VALUES(?, ?)", (file, gemini_ans))
 
         conn.commit()
+
+        print("sleeping for 12 s")
+        time.sleep(12)
 
     conn.close()
 
