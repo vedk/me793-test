@@ -31,10 +31,10 @@ def prompt_gemini(img: Image, model: genai.GenerativeModel) -> str:
     return complete_respose
 
 
-def prompt_haiku(b64img: str, client: anthropic.Anthropic) -> str:
+def prompt_haiku(b64img: str, format: str, client: anthropic.Anthropic) -> str:
     MODEL = "claude-3-haiku-20240307"
     MAX_TOKENS = 1024
-    MEDIA_TYPE = "image/jpeg"
+    MEDIA_TYPE = f"image/{format}"
 
     message = client.messages.create(
         model=MODEL,
@@ -92,15 +92,17 @@ def main():
 
     # fill the database
     for file in files:
+        img = Image.open(join(DATASET_PATH, file))
         with open(join(DATASET_PATH, file), "rb") as fd:
             imgdata = base64.b64encode(fd.read()).decode()
 
+        
         print(f"processing {file} on haiku")
-        haiku_ans = prompt_haiku(imgdata, client)
+        haiku_ans = prompt_haiku(imgdata, img.format.lower(), client)
         cur.execute("INSERT INTO haiku VALUES(?, ?)", (file, haiku_ans))
 
         print(f"processing {file} on gemini")
-        gemini_ans = prompt_gemini(Image.open(join(DATASET_PATH, file)), model)
+        gemini_ans = prompt_gemini(img, model)
         cur.execute("INSERT INTO gemini VALUES(?, ?)", (file, gemini_ans))
 
         conn.commit()
