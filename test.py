@@ -1,12 +1,17 @@
+import os
+
 import google.generativeai as genai
 
 from PIL import Image
-from constants import GOOGLE_API_KEY
+from dotenv import load_dotenv
+from make_data import prompt_gemini
+
+load_dotenv()
 
 img = Image.open("Part5.jpg")
 
 # create a file constants.py and put your Google API key there
-genai.configure(api_key=GOOGLE_API_KEY)
+genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
 model = genai.GenerativeModel("gemini-pro-vision")
 response = model.generate_content(
     [
@@ -21,3 +26,6 @@ response = model.generate_content(
 print(response.prompt_feedback)
 for chunk in response:
     print(chunk.text)
+
+ans = prompt_gemini(img, model)
+print(f"ans = {ans}")
